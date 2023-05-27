@@ -4,4 +4,5 @@
         "editor.defaultFormatter": "josevseb.google-java-format-for-vs-code",
     },
     "java.configuration.updateBuildConfiguration": "interactive",
+    "java.debug.settings.onBuildFailureProceed": true,
 }

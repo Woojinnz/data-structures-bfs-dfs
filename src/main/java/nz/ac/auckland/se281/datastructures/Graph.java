@@ -1,8 +1,13 @@
 package nz.ac.auckland.se281.datastructures;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * A graph that is composed of a set of verticies and edges.
@@ -15,6 +20,7 @@ public class Graph<T extends Comparable<T>> {
 
   private Set<T> verticies;
   private Set<Edge<T>> edges;
+  private T vertex;
 
   public Graph(Set<T> verticies, Set<Edge<T>> edges) {
     this.verticies = verticies;
@@ -22,14 +28,36 @@ public class Graph<T extends Comparable<T>> {
   }
 
   /**
-   * Find the set of root verticies in the graph.
+   * Find the set of root verticies in the graph. Creates a hashmap
    *
    * @return The set of root verticies in the graph.
    */
   public Set<T> getRoots() {
-    Set<T> roots = new HashSet<T>();
+    Map<T, Integer> Map = new HashMap<>();
+    for (T vertex : verticies) {
+      Map.put(vertex, 0);
+    }
+    for (Edge<T> edge : edges) {
+      T destination = edge.getDestination();
+      Map.put(destination, Map.get(destination) + 1);
+    }
 
-    return null;
+    Set<T> roots = new HashSet<>();
+    for (Map.Entry<T, Integer> entry : Map.entrySet()) {
+      if (entry.getValue() == 0) {
+        roots.add(entry.getKey());
+      }
+    }
+
+    for (T vertex : verticies) {
+      Set<T> equivalenceClass = getEquivalenceClass(vertex);
+      if (equivalenceClass.size() > 0) {
+        T minVertex = Collections.min(equivalenceClass);
+        roots.add(minVertex);
+      }
+    }
+
+    return roots;
   }
 
   /**
@@ -84,32 +112,111 @@ public class Graph<T extends Comparable<T>> {
    * @return True if entire graph is transitive, false otherwise
    */
   public boolean isTransitive() {
-    for (Edge<T> edge1 : edges) {}
+    for (Edge<T> edge1 : edges) {
+      for (Edge<T> edge2 : edges) {
+        if (edge1.getDestination().equals(edge2.getSource())) {
+          T source = edge1.getSource();
+          T destination = edge2.getDestination();
+
+          boolean hasDirectEdge = false;
+
+          for (Edge<T> edge3 : edges) {
+            if (edge3.getSource().equals(source) && edge3.getDestination().equals(destination)) {
+              hasDirectEdge = true;
+              break;
+            }
+          }
+          if (!hasDirectEdge) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
+  /**
+   * Calculates if the entire graph is AntiSymmetric
+   *
+   * @return True if entire graph is AntiSymmetric, false otherwise
+   */
   public boolean isAntiSymmetric() {
-    // TODO: Task 1.
-    throw new UnsupportedOperationException();
+    for (Edge<T> edge : edges) {
+      T source = edge.getSource();
+      T destination = edge.getDestination();
+
+      for (Edge<T> edge1 : edges) {
+        if (edge1.getSource().equals(destination) && edge1.getDestination().equals(source)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
+  /**
+   * Calculates if the entire graph is an Equivalence Relation
+   *
+   * @return True if entire graph is an Equivalence Relation, false otherwise
+   */
   public boolean isEquivalence() {
-    // TODO: Task 1.
-    throw new UnsupportedOperationException();
+    return isReflexive() && isSymmetric() && isTransitive();
   }
 
+  /**
+   * Calculates vertex is an equivalance and if so returns a set of all the other verticies that are
+   * in the same equivalence class.
+   *
+   * @param vertex The vertex to check for the Equivalence class
+   * @return A set of all the other verticies that are in the same equivalence class.
+   */
   public Set<T> getEquivalenceClass(T vertex) {
-    // TODO: Task 1.
-    throw new UnsupportedOperationException();
+    if (!isEquivalence()) {
+      Set<T> emptySet = new HashSet<T>();
+      return emptySet;
+    }
+    this.vertex = vertex;
+    Set<T> equivalenceClass = new HashSet<T>();
+    List<T> depthFirstSearch = depthFirstSearchForEquiv(vertex);
+    equivalenceClass.addAll(depthFirstSearch);
+    return equivalenceClass;
+  }
+
+  /**
+   * Performs a depth first search on the graph. This is done by a Stack to ensure that O(1) is kept
+   *
+   * @param vertex The vertex to start the search from
+   * @return List containing the visited verticies in the order they were visited.
+   */
+  public List<T> depthFirstSearchForEquiv(T vertex) {
+    List<T> visited = new ArrayList<T>();
+    Stack<T> stack = new Stack<T>();
+    stack.add(vertex);
+
+    while (!stack.isEmpty()) {
+      T currentVertex = stack.pop();
+      if (!visited.contains(currentVertex)) {
+        visited.add(currentVertex);
+
+        for (Edge<T> edge : edges) {
+          if (edge.getSource().equals(currentVertex)) {
+            stack.add(edge.getDestination());
+          }
+        }
+      }
+    }
+    return visited;
   }
 
   public List<T> iterativeBreadthFirstSearch() {
-    // TODO: Task 2.
-    throw new UnsupportedOperationException();
+    return null;
   }
 
+  /**
+   * @return
+   */
   public List<T> iterativeDepthFirstSearch() {
-    // TODO: Task 2.
-    throw new UnsupportedOperationException();
+    return null;
   }
 
   public List<T> recursiveBreadthFirstSearch() {
