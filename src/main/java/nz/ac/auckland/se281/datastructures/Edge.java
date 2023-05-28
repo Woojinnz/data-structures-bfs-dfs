@@ -14,27 +14,23 @@ public class Edge<T> {
   public Edge(T source, T destination) {
     this.source = source;
     this.destination = destination;
-
   }
 
   /**
-   * 
-   * Getter which gets the node that the edge starts from
-   * 
-   * @return The node that the edge starts from
+   * Getter which gets the node that the edge starts from.
+   *
+   * @return The node that the edge starts from.
    */
   public T getSource() {
     return source;
   }
 
-    /**
-     * 
-     * Getter which gets the node that the edge ends at
-     * 
-     * @return The node that the edge ends at
-     */
-  public T getDestination(){
+  /**
+   * Getter which gets the node that the edge ends at.
+   *
+   * @return The node that the edge ends at.
+   */
+  public T getDestination() {
     return destination;
   }
-
 }

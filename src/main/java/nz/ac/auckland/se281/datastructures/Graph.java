@@ -37,22 +37,25 @@ public class Graph<T extends Comparable<T>> {
    * @return The set of root verticies in the graph.
    */
   public Set<T> getRoots() {
+    // Create a hashmap with T for the verticies and Integer for the number of edges.
     Map<T, Integer> Map = new HashMap<>();
     for (T vertex : verticies) {
       Map.put(vertex, 0);
     }
+    // Check the number of edges for each vertex.
     for (Edge<T> edge : edges) {
       T destination = edge.getDestination();
       Map.put(destination, Map.get(destination) + 1);
     }
-
+    // Add the verticies with no edges to the set of roots.
     Set<T> roots = new HashSet<>();
+    // Iterate through the hashmap and add the verticies with no edges to the set of roots.
     for (Map.Entry<T, Integer> entry : Map.entrySet()) {
       if (entry.getValue() == 0) {
         roots.add(entry.getKey());
       }
     }
-
+    // See if the node is an equivalance class and if it is return the minimum vertex.
     for (T vertex : verticies) {
       Set<T> equivalenceClass = getEquivalenceClass(vertex);
       if (equivalenceClass.size() > 0) {
@@ -60,12 +63,12 @@ public class Graph<T extends Comparable<T>> {
         roots.add(minVertex);
       }
     }
-
+    // Return the roots
     return roots;
   }
 
   /**
-   * Calculates if the entire graph is reflexive
+   * Calculates if the entire graph is reflexive.
    *
    * @return True if a graph is reflexive, false otherwise.
    */
@@ -91,6 +94,7 @@ public class Graph<T extends Comparable<T>> {
    * @return True if the entire graph is symmetric, false otherwise.
    */
   public boolean isSymmetric() {
+    // Iterate through the edges and check if there is a reverse edge.
     for (Edge<T> edge : edges) {
       boolean hasReverseEdge = false;
       T source = edge.getSource();
@@ -111,9 +115,9 @@ public class Graph<T extends Comparable<T>> {
   }
 
   /**
-   * Calculates if the entire graph is Transitive
+   * Calculates if the entire graph is Transitive.
    *
-   * @return True if entire graph is transitive, false otherwise
+   * @return True if entire graph is transitive, false otherwise.
    */
   public boolean isTransitive() {
     for (Edge<T> edge1 : edges) {
@@ -140,9 +144,9 @@ public class Graph<T extends Comparable<T>> {
   }
 
   /**
-   * Calculates if the entire graph is AntiSymmetric
+   * Calculates if the entire graph is AntiSymmetric.
    *
-   * @return True if entire graph is AntiSymmetric, false otherwise
+   * @return True if entire graph is AntiSymmetric, false otherwise.
    */
   public boolean isAntiSymmetric() {
     for (Edge<T> edge : edges) {
@@ -315,7 +319,7 @@ public class Graph<T extends Comparable<T>> {
       if (!visited.contains(root)) {
         queue.add(root);
         visited.add(root);
-        recursiveBFS(queue, visited);
+        recursiveBreadthFirstSearch(queue, visited);
       }
     }
 
@@ -329,7 +333,7 @@ public class Graph<T extends Comparable<T>> {
    * @param queue The queue that will be used to keep track of the vertices
    * @param visited The list that will be used to keep track of the visited vertices
    */
-  private void recursiveBFS(Queue<T> queue, List<T> visited) {
+  private void recursiveBreadthFirstSearch(Queue<T> queue, List<T> visited) {
     if (!queue.isEmpty()) {
       T currentVertex = queue.poll();
 
@@ -348,7 +352,7 @@ public class Graph<T extends Comparable<T>> {
         }
       }
 
-      recursiveBFS(queue, visited);
+      recursiveBreadthFirstSearch(queue, visited);
     }
   }
 
@@ -365,11 +369,12 @@ public class Graph<T extends Comparable<T>> {
     if (roots.isEmpty()) {
       System.out.println("There are no root vertices in the graph");
     }
-
+    // Create a new list that contains the visited vertices
     List<T> visited = new ArrayList<>();
     for (T root : roots) {
       if (!visited.contains(root)) {
-        recursiveDFS(root, visited);
+        // Perfrom the recursive DFS
+        recursiveDepthFirstSearch(root, visited);
       }
     }
     return visited;
@@ -382,7 +387,7 @@ public class Graph<T extends Comparable<T>> {
    * @param currentVertex The current vertex that is being visited
    * @param visited The list that will be used to keep track of the visited vertices
    */
-  private void recursiveDFS(T currentVertex, List<T> visited) {
+  private void recursiveDepthFirstSearch(T currentVertex, List<T> visited) {
     visited.add(currentVertex);
 
     List<T> neighbors = new ArrayList<>();
@@ -395,7 +400,7 @@ public class Graph<T extends Comparable<T>> {
     Collections.sort(neighbors);
     for (T neighbor : neighbors) {
       if (!visited.contains(neighbor)) {
-        recursiveDFS(neighbor, visited);
+        recursiveDepthFirstSearch(neighbor, visited);
       }
     }
   }
