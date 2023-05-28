@@ -6,11 +6,9 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
@@ -214,8 +212,9 @@ public class Graph<T extends Comparable<T>> {
   }
 
   /**
-   * It calcualtes the starting roots based off getRoots() and then performs an iterative breadth
-   * first search on the graph. This is done by a Queue to ensure that O(1) is kept
+   * Performs a breadth first search on the graph. This is done by a Queue to ensure that O(1) is We
+   * must use a priority queue to ensure that the order of the verticies is kept in order. This is
+   * done by the Comparable interface.
    *
    * @return List containing the visited verticies in the order they were visited.
    */
@@ -295,109 +294,13 @@ public class Graph<T extends Comparable<T>> {
     return visited;
   }
 
-  /**
-   * It calcualtes the starting roots based off getRoots() and then performs a recruisve breadth
-   * first search on the graph. This is done by a Queue to ensure that O(1) is kept. This method
-   * will keep track of the queue and the visited list and the helper function recursiveBFS is used
-   * to run the recursive function
-   *
-   * @return List containing the visited verticies in the order they were visited.
-   */
   public List<T> recursiveBreadthFirstSearch() {
-    Set<T> roots = getRoots();
-    if (roots.isEmpty()) {
-      System.out.println("There are no root vertices in the graph");
-    }
-
-    List<T> visited = new ArrayList<>();
-    Queue<T> queue = new LinkedList<>();
-
-    for (T root : roots) {
-      if (!visited.contains(root)) {
-        queue.add(root);
-        visited.add(root);
-        recursiveBFS(queue, visited);
-      }
-    }
-
-    return visited;
+    // TODO: Task 3.
+    throw new UnsupportedOperationException();
   }
 
-  /**
-   * I require a private helper for the recursive Breadth First Search This helper method will allow
-   * me to call the recursive function for BFS While the other method keeps track of the queue
-   *
-   * @param queue The queue that will be used to keep track of the vertices
-   * @param visited The list that will be used to keep track of the visited vertices
-   */
-  private void recursiveBFS(Queue<T> queue, List<T> visited) {
-    if (!queue.isEmpty()) {
-      T currentVertex = queue.poll();
-
-      List<T> neighbors = new ArrayList<>();
-      for (Edge<T> edge : edges) {
-        if (edge.getSource().equals(currentVertex)) {
-          neighbors.add(edge.getDestination());
-        }
-      }
-
-      Collections.sort(neighbors);
-      for (T neighbor : neighbors) {
-        if (!visited.contains(neighbor)) {
-          queue.add(neighbor);
-          visited.add(neighbor);
-        }
-      }
-
-      recursiveBFS(queue, visited);
-    }
-  }
-
-  /**
-   * It calcualtes the starting roots based off getRoots() and then performs a recruisve depth first
-   * As the method cannot have any parameters this method will simply only be used to store a list
-   * of the visited vertices. The recursiveDFS is a helper method which will be called to perform
-   * the recursive function
-   *
-   * @return List containing the visited verticies in the order they were visited.
-   */
   public List<T> recursiveDepthFirstSearch() {
-    Set<T> roots = getRoots();
-    if (roots.isEmpty()) {
-      System.out.println("There are no root vertices in the graph");
-    }
-
-    List<T> visited = new ArrayList<>();
-    for (T root : roots) {
-      if (!visited.contains(root)) {
-        recursiveDFS(root, visited);
-      }
-    }
-    return visited;
-  }
-
-  /**
-   * The helper method for the recursive depth first search. This method will be called recursively
-   * to perform the recursive function
-   *
-   * @param currentVertex The current vertex that is being visited
-   * @param visited The list that will be used to keep track of the visited vertices
-   */
-  private void recursiveDFS(T currentVertex, List<T> visited) {
-    visited.add(currentVertex);
-
-    List<T> neighbors = new ArrayList<>();
-    for (Edge<T> edge : edges) {
-      if (edge.getSource().equals(currentVertex)) {
-        neighbors.add(edge.getDestination());
-      }
-    }
-
-    Collections.sort(neighbors);
-    for (T neighbor : neighbors) {
-      if (!visited.contains(neighbor)) {
-        recursiveDFS(neighbor, visited);
-      }
-    }
+    // TODO: Task 3.
+    throw new UnsupportedOperationException();
   }
 }
