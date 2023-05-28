@@ -38,19 +38,19 @@ public class Graph<T extends Comparable<T>> {
    */
   public Set<T> getRoots() {
     // Create a hashmap with T for the verticies and Integer for the number of edges.
-    Map<T, Integer> Map = new HashMap<>();
+    Map<T, Integer> mapForVertice = new HashMap<>();
     for (T vertex : verticies) {
-      Map.put(vertex, 0);
+      mapForVertice.put(vertex, 0);
     }
     // Check the number of edges for each vertex.
     for (Edge<T> edge : edges) {
       T destination = edge.getDestination();
-      Map.put(destination, Map.get(destination) + 1);
+      mapForVertice.put(destination, mapForVertice.get(destination) + 1);
     }
     // Add the verticies with no edges to the set of roots.
     Set<T> roots = new HashSet<>();
     // Iterate through the hashmap and add the verticies with no edges to the set of roots.
-    for (Map.Entry<T, Integer> entry : Map.entrySet()) {
+    for (Map.Entry<T, Integer> entry : mapForVertice.entrySet()) {
       if (entry.getValue() == 0) {
         roots.add(entry.getKey());
       }
@@ -63,7 +63,7 @@ public class Graph<T extends Comparable<T>> {
         roots.add(minVertex);
       }
     }
-    // Return the roots
+    // Return set which contains all the verticies that are considered a root
     return roots;
   }
 
@@ -73,8 +73,10 @@ public class Graph<T extends Comparable<T>> {
    * @return True if a graph is reflexive, false otherwise.
    */
   public boolean isReflexive() {
+    // Loop through the verticies
     for (T vertex : verticies) {
       boolean hasSelfLoop = false;
+      // Loop through the edges and check if there is a self loop.
       for (Edge<T> edge : edges) {
         if (edge.getSource().equals(vertex) && edge.getDestination().equals(vertex)) {
           hasSelfLoop = true;
@@ -85,6 +87,7 @@ public class Graph<T extends Comparable<T>> {
         return false;
       }
     }
+    // Return true if there is a self loop.
     return true;
   }
 
@@ -120,14 +123,17 @@ public class Graph<T extends Comparable<T>> {
    * @return True if entire graph is transitive, false otherwise.
    */
   public boolean isTransitive() {
+    // Iterate through the edges edge 1
     for (Edge<T> edge1 : edges) {
+      // Iterate through the edges edge 2
       for (Edge<T> edge2 : edges) {
+        // Check if the destination of edge 1 is the same as the source of edge 2
         if (edge1.getDestination().equals(edge2.getSource())) {
           T source = edge1.getSource();
           T destination = edge2.getDestination();
 
           boolean hasDirectEdge = false;
-
+          // If it is check if there is a direct edge between the source and destination
           for (Edge<T> edge3 : edges) {
             if (edge3.getSource().equals(source) && edge3.getDestination().equals(destination)) {
               hasDirectEdge = true;
@@ -140,6 +146,7 @@ public class Graph<T extends Comparable<T>> {
         }
       }
     }
+    // Return true if there is a direct edge.
     return true;
   }
 
@@ -179,12 +186,16 @@ public class Graph<T extends Comparable<T>> {
    * @return A set of all the other verticies that are in the same equivalence class.
    */
   public Set<T> getEquivalenceClass(T vertex) {
+    // If the graph is not an equivalence relation return an empty set.
     if (!isEquivalence()) {
       Set<T> emptySet = new HashSet<T>();
       return emptySet;
     }
+    // Create a new set and add the vertex to it.
     Set<T> equivalenceClass = new HashSet<T>();
+    // Perform a depth first search on the vertex.
     List<T> depthFirstSearch = depthFirstSearchForEquiv(vertex);
+    // Add all the verticies that were visited in the depth first search to the set.
     equivalenceClass.addAll(depthFirstSearch);
     return equivalenceClass;
   }
@@ -196,15 +207,18 @@ public class Graph<T extends Comparable<T>> {
    * @return List containing the visited verticies in the order they were visited.
    */
   public List<T> depthFirstSearchForEquiv(T vertex) {
+    // Create a new list to store the visited verticies.
     List<T> visited = new ArrayList<T>();
     Stack<T> stack = new Stack<T>();
     stack.add(vertex);
-
+    // While the stack is not empty
     while (!stack.isEmpty()) {
+      // Pop the top vertex off the stack and set it as the currentVertex
       T currentVertex = stack.pop();
       if (!visited.contains(currentVertex)) {
+        // Add the vertex to the visited list
         visited.add(currentVertex);
-
+        // Add all the verticies that are adjacent to the currentVertex to the stack.
         for (Edge<T> edge : edges) {
           if (edge.getSource().equals(currentVertex)) {
             stack.add(edge.getDestination());
@@ -223,30 +237,32 @@ public class Graph<T extends Comparable<T>> {
    * @return List containing the visited verticies in the order they were visited.
    */
   public List<T> iterativeBreadthFirstSearch() {
-    Set<T> roots = getRoots();
-    if (roots.isEmpty()) {
-      throw new IllegalStateException("There are no root vertices in the graph");
-    }
 
+    Set<T> roots = getRoots();
+    // If the graph has no roots then return an empty list.
+    if (roots.isEmpty()) {
+      System.err.println("Graph has no roots");
+    }
+    // Create a new list to store the visited verticies.
     List<T> visited = new ArrayList<T>();
     PriorityQueue<T> queue = new PriorityQueue<T>();
-
+    // Loop through each root
     for (T root : roots) {
       if (!visited.contains(root)) {
         queue.add(root);
-
+        // Check if the queue is empty
         while (!queue.isEmpty()) {
           T currentVertex = queue.poll();
           if (!visited.contains(currentVertex)) {
             visited.add(currentVertex);
-
+            // Get all the neighbors of the current vertex
             List<T> neighbors = new ArrayList<T>();
             for (Edge<T> edge : edges) {
               if (edge.getSource().equals(currentVertex)) {
                 neighbors.add(edge.getDestination());
               }
             }
-
+            // Sort the neighbors to ensure that the order is kept.
             Collections.sort(neighbors);
             queue.addAll(neighbors);
           }
@@ -307,15 +323,18 @@ public class Graph<T extends Comparable<T>> {
    * @return List containing the visited verticies in the order they were visited.
    */
   public List<T> recursiveBreadthFirstSearch() {
+    // Get the roots of the graph
     Set<T> roots = getRoots();
+    // If there are no roots then return that there are no root vertices in the graph
     if (roots.isEmpty()) {
       System.out.println("There are no root vertices in the graph");
     }
-
+    // Create a new list to store the visited verticies. and queue to keep track of the vertices
     List<T> visited = new ArrayList<>();
     Queue<T> queue = new LinkedList<>();
-
+    // Loop through each root
     for (T root : roots) {
+      // If the root has not been visited then add it to the queue and the visited list
       if (!visited.contains(root)) {
         queue.add(root);
         visited.add(root);
@@ -388,15 +407,18 @@ public class Graph<T extends Comparable<T>> {
    * @param visited The list that will be used to keep track of the visited vertices
    */
   private void recursiveDepthFirstSearch(T currentVertex, List<T> visited) {
+    // Add the current vertex to the visited list
     visited.add(currentVertex);
-
+    // Create a list to stroe neighbors of the current vertex
     List<T> neighbors = new ArrayList<>();
     for (Edge<T> edge : edges) {
+      // If the edge is an outgoing edge from the current vertex
       if (edge.getSource().equals(currentVertex)) {
+        // Add the neighbors to the list
         neighbors.add(edge.getDestination());
       }
     }
-
+    // Sort the neighbors to ensure that the order is kept.
     Collections.sort(neighbors);
     for (T neighbor : neighbors) {
       if (!visited.contains(neighbor)) {
