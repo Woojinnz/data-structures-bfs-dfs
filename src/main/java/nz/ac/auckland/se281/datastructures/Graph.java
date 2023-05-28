@@ -156,16 +156,20 @@ public class Graph<T extends Comparable<T>> {
    * @return True if entire graph is AntiSymmetric, false otherwise.
    */
   public boolean isAntiSymmetric() {
+    // Iterate through the edges and check if there is a reverse edge.
     for (Edge<T> edge : edges) {
+      // Create variables that store the edges source and destination
       T source = edge.getSource();
       T destination = edge.getDestination();
-
+      // Check if the source and destination are the same
       for (Edge<T> edge1 : edges) {
         if (edge1.getSource().equals(destination) && edge1.getDestination().equals(source)) {
+          // If they are the same return false
           return false;
         }
       }
     }
+    // Return true if there is no reverse edge.
     return true;
   }
 
@@ -279,30 +283,37 @@ public class Graph<T extends Comparable<T>> {
    * @return List containing the visited verticies in the order they were visited.
    */
   public List<T> iterativeDepthFirstSearch() {
+    // Get the roots of the graph
     Set<T> roots = getRoots();
+    // If the graph has no roots then return "There are no roots in this graph"
     if (roots.isEmpty()) {
       System.out.println("There are no roots in this graph");
     }
+    // Create a new list to store the visited verticies.
     List<T> visited = new ArrayList<T>();
+    // Create a new stack to store the verticies that are to be visited.
     Deque<T> stack = new ArrayDeque<T>();
-
+    // Loop through each root
     for (T root : roots) {
       if (!visited.contains(root)) {
+        // Add the root to the stack
         stack.push(root);
 
         while (!stack.isEmpty()) {
+          // Pop the top vertex off the stack and set it as the currentVertex
           T currentVertex = stack.pop();
           if (!visited.contains(currentVertex)) {
             visited.add(currentVertex);
-
+            // Add all the verticies that are adjacent to the currentVertex to the stack.
             List<T> neighbors = new ArrayList<T>();
             for (Edge<T> edge : edges) {
               if (edge.getSource().equals(currentVertex)) {
                 neighbors.add(edge.getDestination());
               }
             }
-
+            // Sort the neighbors to ensure that the order is kept.
             Collections.sort(neighbors, Collections.reverseOrder());
+            // Add all the neighbors to the stack
             for (T neighbor : neighbors) {
               stack.push(neighbor);
             }
@@ -310,7 +321,7 @@ public class Graph<T extends Comparable<T>> {
         }
       }
     }
-
+    // Return the visited list
     return visited;
   }
 
@@ -353,16 +364,18 @@ public class Graph<T extends Comparable<T>> {
    * @param visited The list that will be used to keep track of the visited vertices
    */
   private void recursiveBreadthFirstSearch(Queue<T> queue, List<T> visited) {
+    // If the queue is not empty then poll the queue and set the current vertex to the polled
     if (!queue.isEmpty()) {
       T currentVertex = queue.poll();
-
+      // Get all the neighbors of the current vertex
       List<T> neighbors = new ArrayList<>();
+      // Loop through all the edges and add the neighbors to the list
       for (Edge<T> edge : edges) {
         if (edge.getSource().equals(currentVertex)) {
           neighbors.add(edge.getDestination());
         }
       }
-
+      // Sort the neighbors to ensure that the order is kept.
       Collections.sort(neighbors);
       for (T neighbor : neighbors) {
         if (!visited.contains(neighbor)) {
@@ -370,7 +383,7 @@ public class Graph<T extends Comparable<T>> {
           visited.add(neighbor);
         }
       }
-
+      // Call the recursive function again
       recursiveBreadthFirstSearch(queue, visited);
     }
   }
