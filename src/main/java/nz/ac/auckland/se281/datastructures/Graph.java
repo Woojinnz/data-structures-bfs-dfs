@@ -363,10 +363,10 @@ public class Graph<T extends Comparable<T>> {
 
   /**
    * I require a private helper for the recursive Breadth First Search This helper method will allow
-   * me to call the recursive function for BFS While the other method keeps track of the queue
+   * me to call the recursive function for BFS While the other method keeps track of the queue.
    *
-   * @param queue The queue that will be used to keep track of the vertices
-   * @param visited The list that will be used to keep track of the visited vertices
+   * @param queue The queue that will be used to keep track of the vertices.
+   * @param visited The list that will be used to keep track of the visited vertices.
    */
   private void recursiveBreadthFirstSearch(Queue<T> queue, List<T> visited) {
     // If the queue is not empty then poll the queue and set the current vertex to the polled
