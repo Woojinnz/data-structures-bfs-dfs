@@ -161,7 +161,12 @@ public class Graph<T extends Comparable<T>> {
       // Create variables that store the edges source and destination
       T source = edge.getSource();
       T destination = edge.getDestination();
+      // If the loop has a self-edge then we should count this as an anti-symmetric edge.
+      if (source.equals(destination)) {
+        continue;
+      }
       // Check if the source and destination are the same
+
       for (Edge<T> edge1 : edges) {
         if (edge1.getSource().equals(destination) && edge1.getDestination().equals(source)) {
           // If they are the same return false
