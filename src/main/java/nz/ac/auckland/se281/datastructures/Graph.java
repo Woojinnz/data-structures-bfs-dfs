@@ -451,7 +451,8 @@ public class Graph<T extends Comparable<T>> {
       // in AdjacenyListGraph
       List<T> neighbors = getNeighbors(vertex);
 
-      // Sort the neighbors
+      // Using my sortList method, sort the neighbors in ascending order this is important as I need
+      // to go through the neighbours in an ascending order
       sortList(neighbors);
 
       // Visit each neighbor and enqueue it if it hasn't been visited before
