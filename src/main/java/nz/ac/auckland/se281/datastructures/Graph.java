@@ -263,30 +263,47 @@ public class Graph<T extends Comparable<T>> {
    * @return List containing the visited verticies in the order they were visited.
    */
   public List<T> iterativeBreadthFirstSearch() {
+    // Retrieve the roots of the graph
     Set<T> roots = getRoots();
 
+    // Check if there are any roots in the graph
     if (roots.isEmpty()) {
       System.err.println("Graph has no roots");
     }
 
+    // Initialize the visited vertices list, visited set, and the queue
     List<T> visited = new ArrayList<T>();
     Set<T> visitedSet = new HashSet<T>();
     LinkedList<T> queue = new LinkedList<T>();
 
+    // Process each root in the graph
     for (T root : roots) {
+      // Check if the root has been visited before
       if (!visitedSet.contains(root)) {
+        // Add the root to the queue
         queue.add(root);
 
+        // Perform breadth-first search
         while (!queue.isEmpty()) {
+          // Dequeue the current vertex from the queue
           T currentVertex = queue.poll();
+
+          // Check if the current vertex has not been visited before
           if (!visitedSet.contains(currentVertex)) {
+            // Add the current vertex to the visited list and set
             visited.add(currentVertex);
             visitedSet.add(currentVertex);
+
+            // Get the neighbors of the current vertex
             List<T> neighbors = getNeighbors(currentVertex);
+
+            // Sort the neighbors
             sortList(neighbors);
-            for (T neighbour : neighbors) {
-              if (!visitedSet.contains(neighbour) && !queue.contains(neighbour)) {
-                queue.add(neighbour);
+
+            // Visit each neighbor and enqueue it if it hasn't been visited before
+            for (T neighbor : neighbors) {
+              if (!visitedSet.contains(neighbor) && !queue.contains(neighbor)) {
+                queue.add(neighbor);
               }
             }
           }
@@ -294,6 +311,7 @@ public class Graph<T extends Comparable<T>> {
       }
     }
 
+    // Return the visited vertices in the order they were visited
     return visited;
   }
 
@@ -423,10 +441,18 @@ public class Graph<T extends Comparable<T>> {
    * @param visited The list that will be used to keep track of the visited vertices.
    */
   public void recursiveBreadthFirstSearch(Queue<T> queue, List<T> visited, Set<T> visitedSet) {
+    // Base case: if the queue is not empty, continue the search
     if (!queue.isEmpty()) {
+      // Dequeue the vertex from the queue
       T vertex = queue.poll();
+
+      // Get the neighbors of the vertex
       List<T> neighbors = getNeighbors(vertex);
+
+      // Sort the neighbors
       sortList(neighbors);
+
+      // Visit each neighbor and enqueue it if it hasn't been visited before
       for (T neighbor : neighbors) {
         if (!visitedSet.contains(neighbor)) {
           visited.add(neighbor);
@@ -434,6 +460,8 @@ public class Graph<T extends Comparable<T>> {
           queue.add(neighbor);
         }
       }
+
+      // Recursive call to continue the breadth-first search
       recursiveBreadthFirstSearch(queue, visited, visitedSet);
     }
   }
