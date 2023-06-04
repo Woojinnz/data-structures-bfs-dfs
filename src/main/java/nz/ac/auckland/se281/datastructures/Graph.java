@@ -3,9 +3,11 @@ package nz.ac.auckland.se281.datastructures;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +26,20 @@ public class Graph<T extends Comparable<T>> {
 
   private Set<T> verticies;
   private Set<Edge<T>> edges;
+  private AdjacencyListGraph<T> adjacencyListGraph;
 
   public Graph(Set<T> verticies, Set<Edge<T>> edges) {
     this.verticies = verticies;
     this.edges = edges;
+    this.adjacencyListGraph = new AdjacencyListGraph<T>();
+    // populate adjacencyListGraph with edges
+    for (Edge<T> edge : edges) {
+      this.adjacencyListGraph.addEdge(edge.getSource(), edge.getDestination());
+    }
+  }
+
+  public List<T> getNeighbors(T vertex) {
+    return adjacencyListGraph.getNeighbors(vertex);
   }
 
   /**
@@ -62,8 +74,14 @@ public class Graph<T extends Comparable<T>> {
         roots.add(minVertex);
       }
     }
+
+    List<T> orderedRoots = new ArrayList<>(roots);
+    sortList(orderedRoots);
+
+    Set<T> rootsOrdered = new LinkedHashSet<>(orderedRoots);
+
     // Return set which contains all the verticies that are considered a root
-    return roots;
+    return rootsOrdered;
   }
 
   /**
@@ -240,55 +258,43 @@ public class Graph<T extends Comparable<T>> {
   }
 
   /**
-   * Performs a breadth first search on the graph. This is done by a Queue to ensure that O(1) is We
-   * must use a priority queue to ensure that the order of the verticies is kept in order. This is
-   * done by the Comparable interface.
+   * Performs a breadth first search on the graph.
    *
    * @return List containing the visited verticies in the order they were visited.
    */
   public List<T> iterativeBreadthFirstSearch() {
-
     Set<T> roots = getRoots();
-    // If the graph has no roots then return an empty list.
+
     if (roots.isEmpty()) {
       System.err.println("Graph has no roots");
     }
-    // Create a new list to store the visited verticies.
+
     List<T> visited = new ArrayList<T>();
-    Set<T> visitedSet = new HashSet<T>(); // To enable O(1) contains check
-    Queue<T> queue = new LinkedList<T>();
-    // Loop through each root
+    Set<T> visitedSet = new HashSet<T>();
+    LinkedList<T> queue = new LinkedList<T>();
+
     for (T root : roots) {
       if (!visitedSet.contains(root)) {
         queue.add(root);
-        // Check if the queue is empty
+
         while (!queue.isEmpty()) {
           T currentVertex = queue.poll();
           if (!visitedSet.contains(currentVertex)) {
             visited.add(currentVertex);
             visitedSet.add(currentVertex);
-            // Get all the neighbors of the current vertex
-            List<T> neighbors =
-                getNeighbors(currentVertex); // A hypothetical function to get neighbors
-            queue.addAll(neighbors);
+            List<T> neighbors = getNeighbors(currentVertex);
+            sortList(neighbors);
+            for (T neighbour : neighbors) {
+              if (!visitedSet.contains(neighbour) && !queue.contains(neighbour)) {
+                queue.add(neighbour);
+              }
+            }
           }
         }
       }
     }
-    return visited;
-  }
 
-  public List<T> getNeighbors(T vertex) {
-    List<T> neighbors = new ArrayList<>();
-    for (Edge<T> edge : edges) {
-      if (edge.getSource().equals(vertex)) {
-        neighbors.add(edge.getDestination());
-      } else if (edge.getDestination().equals(vertex)) {
-        neighbors.add(edge.getSource());
-      }
-    }
-    Collections.sort(neighbors); // Sort the neighbors list in ascending order
-    return neighbors;
+    return visited;
   }
 
   /**
@@ -318,19 +324,17 @@ public class Graph<T extends Comparable<T>> {
 
         while (!stack.isEmpty()) {
           // Pop the top vertex off the stack and set it as the currentVertex
+
           T currentVertex = stack.pop();
           if (!visitedSet.contains(currentVertex)) {
             visited.add(currentVertex);
             visitedSet.add(currentVertex);
             // Add all the vertices that are adjacent to the currentVertex to the stack.
-            List<T> neighbors = new ArrayList<T>();
-            for (Edge<T> edge : edges) {
-              if (edge.getSource().equals(currentVertex)) {
-                neighbors.add(edge.getDestination());
-              }
-            }
-            // Sort the neighbors to ensure that the order is kept.
-            Collections.sort(neighbors, Collections.reverseOrder());
+
+            List<T> neighbors = getNeighbors(currentVertex);
+            sortList(neighbors);
+            Collections.reverse(neighbors);
+
             // Add all the neighbors to the stack
             for (T neighbor : neighbors) {
               stack.push(neighbor);
@@ -341,6 +345,42 @@ public class Graph<T extends Comparable<T>> {
     }
     // Return the visited list
     return visited;
+  }
+
+  /**
+   * Sorts the elements in the given list in ascending order. The elements are compared based on
+   * their types: - If both elements are strings, they are parsed into integers and compared. - If
+   * both elements are integers, they are compared directly.
+   *
+   * @param list the list of elements to be sorted
+   * @throws IllegalArgumentException if the elements are not of type String or Integer
+   */
+  public void sortList(List<T> list) {
+    Collections.sort(
+        list,
+        new Comparator<T>() {
+          @Override
+          public int compare(T obj1, T obj2) {
+            // Compare elements based on their types
+            if (obj1 instanceof String && obj2 instanceof String) {
+              // If both elements are strings, parse them into integers and compare
+              String str1 = (String) obj1;
+              String str2 = (String) obj2;
+              Integer int1 = Integer.parseInt(str1);
+              Integer int2 = Integer.parseInt(str2);
+              return int1.compareTo(int2);
+            } else if (obj1 instanceof Integer && obj2 instanceof Integer) {
+              // If both elements are integers, compare them directly
+              Integer int1 = (Integer) obj1;
+              Integer int2 = (Integer) obj2;
+              return int1.compareTo(int2);
+            } else {
+              // Throw an exception if the elements are not of type String or Integer
+              throw new IllegalArgumentException(
+                  "Invalid type comparison: " + obj1.getClass() + " and " + obj2.getClass());
+            }
+          }
+        });
   }
 
   /**
@@ -385,8 +425,9 @@ public class Graph<T extends Comparable<T>> {
   public void recursiveBreadthFirstSearch(Queue<T> queue, List<T> visited, Set<T> visitedSet) {
     if (!queue.isEmpty()) {
       T vertex = queue.poll();
-      // Assume getNeighbors is a method to get all the adjacent vertices
-      for (T neighbor : getNeighbors(vertex)) {
+      List<T> neighbors = getNeighbors(vertex);
+      sortList(neighbors);
+      for (T neighbor : neighbors) {
         if (!visitedSet.contains(neighbor)) {
           visited.add(neighbor);
           visitedSet.add(neighbor);
@@ -433,7 +474,9 @@ public class Graph<T extends Comparable<T>> {
     visited.add(root);
     visitedSet.add(root);
     // Assume getNeighbors is a method that returns a list of neighbors
-    for (T neighbor : getNeighbors(root)) {
+    List<T> neighbors = getNeighbors(root);
+    sortList(neighbors);
+    for (T neighbor : neighbors) {
       if (!visitedSet.contains(neighbor)) {
         recursiveDepthFirstSearch(neighbor, visited, visitedSet);
       }
