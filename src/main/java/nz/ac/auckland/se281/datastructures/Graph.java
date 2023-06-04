@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
@@ -216,7 +215,8 @@ public class Graph<T extends Comparable<T>> {
    * @return List containing the visited verticies in the order they were visited.
    */
   public List<T> depthFirstSearchForEquiv(T vertex) {
-    // Create a new list to store the visited verticies.
+    // Create a new HashSet to store the visited vertices.
+    Set<T> visitedSet = new HashSet<T>();
     List<T> visited = new ArrayList<T>();
     Stack<T> stack = new Stack<T>();
     stack.add(vertex);
@@ -224,10 +224,11 @@ public class Graph<T extends Comparable<T>> {
     while (!stack.isEmpty()) {
       // Pop the top vertex off the stack and set it as the currentVertex
       T currentVertex = stack.pop();
-      if (!visited.contains(currentVertex)) {
-        // Add the vertex to the visited list
+      if (!visitedSet.contains(currentVertex)) {
+        // Add the vertex to the visited list and visitedSet
         visited.add(currentVertex);
-        // Add all the verticies that are adjacent to the currentVertex to the stack.
+        visitedSet.add(currentVertex);
+        // Add all the vertices that are adjacent to the currentVertex to the stack.
         for (Edge<T> edge : edges) {
           if (edge.getSource().equals(currentVertex)) {
             stack.add(edge.getDestination());
@@ -254,31 +255,40 @@ public class Graph<T extends Comparable<T>> {
     }
     // Create a new list to store the visited verticies.
     List<T> visited = new ArrayList<T>();
-    PriorityQueue<T> queue = new PriorityQueue<T>();
+    Set<T> visitedSet = new HashSet<T>(); // To enable O(1) contains check
+    Queue<T> queue = new LinkedList<T>();
     // Loop through each root
     for (T root : roots) {
-      if (!visited.contains(root)) {
+      if (!visitedSet.contains(root)) {
         queue.add(root);
         // Check if the queue is empty
         while (!queue.isEmpty()) {
           T currentVertex = queue.poll();
-          if (!visited.contains(currentVertex)) {
+          if (!visitedSet.contains(currentVertex)) {
             visited.add(currentVertex);
+            visitedSet.add(currentVertex);
             // Get all the neighbors of the current vertex
-            List<T> neighbors = new ArrayList<T>();
-            for (Edge<T> edge : edges) {
-              if (edge.getSource().equals(currentVertex)) {
-                neighbors.add(edge.getDestination());
-              }
-            }
-            // Sort the neighbors to ensure that the order is kept.
-            Collections.sort(neighbors);
+            List<T> neighbors =
+                getNeighbors(currentVertex); // A hypothetical function to get neighbors
             queue.addAll(neighbors);
           }
         }
       }
     }
     return visited;
+  }
+
+  public List<T> getNeighbors(T vertex) {
+    List<T> neighbors = new ArrayList<>();
+    for (Edge<T> edge : edges) {
+      if (edge.getSource().equals(vertex)) {
+        neighbors.add(edge.getDestination());
+      } else if (edge.getDestination().equals(vertex)) {
+        neighbors.add(edge.getSource());
+      }
+    }
+    Collections.sort(neighbors); // Sort the neighbors list in ascending order
+    return neighbors;
   }
 
   /**
@@ -294,22 +304,25 @@ public class Graph<T extends Comparable<T>> {
     if (roots.isEmpty()) {
       System.out.println("There are no roots in this graph");
     }
-    // Create a new list to store the visited verticies.
+    // Create a new list to store the visited vertices.
     List<T> visited = new ArrayList<T>();
-    // Create a new stack to store the verticies that are to be visited.
+    // Create a new set to quickly check visited vertices
+    Set<T> visitedSet = new HashSet<T>();
+    // Create a new stack to store the vertices that are to be visited.
     Deque<T> stack = new ArrayDeque<T>();
     // Loop through each root
     for (T root : roots) {
-      if (!visited.contains(root)) {
+      if (!visitedSet.contains(root)) {
         // Add the root to the stack
         stack.push(root);
 
         while (!stack.isEmpty()) {
           // Pop the top vertex off the stack and set it as the currentVertex
           T currentVertex = stack.pop();
-          if (!visited.contains(currentVertex)) {
+          if (!visitedSet.contains(currentVertex)) {
             visited.add(currentVertex);
-            // Add all the verticies that are adjacent to the currentVertex to the stack.
+            visitedSet.add(currentVertex);
+            // Add all the vertices that are adjacent to the currentVertex to the stack.
             List<T> neighbors = new ArrayList<T>();
             for (Edge<T> edge : edges) {
               if (edge.getSource().equals(currentVertex)) {
@@ -345,19 +358,20 @@ public class Graph<T extends Comparable<T>> {
     if (roots.isEmpty()) {
       System.out.println("There are no root vertices in the graph");
     }
-    // Create a new list to store the visited verticies. and queue to keep track of the vertices
+    // Create a new list to store the visited vertices, and a set for quick lookup.
     List<T> visited = new ArrayList<>();
+    Set<T> visitedSet = new HashSet<>();
     Queue<T> queue = new LinkedList<>();
     // Loop through each root
     for (T root : roots) {
       // If the root has not been visited then add it to the queue and the visited list
-      if (!visited.contains(root)) {
+      if (!visitedSet.contains(root)) {
         queue.add(root);
         visited.add(root);
-        recursiveBreadthFirstSearch(queue, visited);
+        visitedSet.add(root);
+        recursiveBreadthFirstSearch(queue, visited, visitedSet);
       }
     }
-
     return visited;
   }
 
@@ -368,28 +382,18 @@ public class Graph<T extends Comparable<T>> {
    * @param queue The queue that will be used to keep track of the vertices.
    * @param visited The list that will be used to keep track of the visited vertices.
    */
-  private void recursiveBreadthFirstSearch(Queue<T> queue, List<T> visited) {
-    // If the queue is not empty then poll the queue and set the current vertex to the polled
+  public void recursiveBreadthFirstSearch(Queue<T> queue, List<T> visited, Set<T> visitedSet) {
     if (!queue.isEmpty()) {
-      T currentVertex = queue.poll();
-      // Get all the neighbors of the current vertex
-      List<T> neighbors = new ArrayList<>();
-      // Loop through all the edges and add the neighbors to the list
-      for (Edge<T> edge : edges) {
-        if (edge.getSource().equals(currentVertex)) {
-          neighbors.add(edge.getDestination());
-        }
-      }
-      // Sort the neighbors to ensure that the order is kept.
-      Collections.sort(neighbors);
-      for (T neighbor : neighbors) {
-        if (!visited.contains(neighbor)) {
-          queue.add(neighbor);
+      T vertex = queue.poll();
+      // Assume getNeighbors is a method to get all the adjacent vertices
+      for (T neighbor : getNeighbors(vertex)) {
+        if (!visitedSet.contains(neighbor)) {
           visited.add(neighbor);
+          visitedSet.add(neighbor);
+          queue.add(neighbor);
         }
       }
-      // Call the recursive function again
-      recursiveBreadthFirstSearch(queue, visited);
+      recursiveBreadthFirstSearch(queue, visited, visitedSet);
     }
   }
 
@@ -408,10 +412,11 @@ public class Graph<T extends Comparable<T>> {
     }
     // Create a new list that contains the visited vertices
     List<T> visited = new ArrayList<>();
+    Set<T> visitedSet = new HashSet<>();
     for (T root : roots) {
-      if (!visited.contains(root)) {
-        // Perfrom the recursive DFS
-        recursiveDepthFirstSearch(root, visited);
+      if (!visitedSet.contains(root)) {
+        // Perform the recursive DFS
+        recursiveDepthFirstSearch(root, visited, visitedSet);
       }
     }
     return visited;
@@ -424,23 +429,13 @@ public class Graph<T extends Comparable<T>> {
    * @param currentVertex The current vertex that is being visited
    * @param visited The list that will be used to keep track of the visited vertices
    */
-  private void recursiveDepthFirstSearch(T currentVertex, List<T> visited) {
-    // Add the current vertex to the visited list
-    visited.add(currentVertex);
-    // Create a list to stroe neighbors of the current vertex
-    List<T> neighbors = new ArrayList<>();
-    for (Edge<T> edge : edges) {
-      // If the edge is an outgoing edge from the current vertex
-      if (edge.getSource().equals(currentVertex)) {
-        // Add the neighbors to the list
-        neighbors.add(edge.getDestination());
-      }
-    }
-    // Sort the neighbors to ensure that the order is kept.
-    Collections.sort(neighbors);
-    for (T neighbor : neighbors) {
-      if (!visited.contains(neighbor)) {
-        recursiveDepthFirstSearch(neighbor, visited);
+  private void recursiveDepthFirstSearch(T root, List<T> visited, Set<T> visitedSet) {
+    visited.add(root);
+    visitedSet.add(root);
+    // Assume getNeighbors is a method that returns a list of neighbors
+    for (T neighbor : getNeighbors(root)) {
+      if (!visitedSet.contains(neighbor)) {
+        recursiveDepthFirstSearch(neighbor, visited, visitedSet);
       }
     }
   }
