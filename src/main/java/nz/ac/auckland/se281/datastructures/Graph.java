@@ -297,7 +297,8 @@ public class Graph<T extends Comparable<T>> {
             // Get the neighbors of the current vertex
             List<T> neighbors = getNeighbors(currentVertex);
 
-            // Sort the neighbors
+            // By using my sortList helper function I am going to sort the list. while the list has
+            // class T I know it is either a string or an integer.
             sortList(neighbors);
 
             // Visit each neighbor and enqueue it if it hasn't been visited before
@@ -446,7 +447,8 @@ public class Graph<T extends Comparable<T>> {
       // Dequeue the vertex from the queue
       T vertex = queue.poll();
 
-      // Get the neighbors of the vertex
+      // Using the getNeighbors method, get the neighbors of the vertex. The code for is implement
+      // in AdjacenyListGraph
       List<T> neighbors = getNeighbors(vertex);
 
       // Sort the neighbors
