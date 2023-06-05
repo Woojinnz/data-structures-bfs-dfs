@@ -1,26 +1,6 @@
 package nz.ac.auckland.se281.datastructures;
 
 /**
- * A class that represents a single node in a linked list.
- *
- * @param <T> The type of the data that this node holds.
- */
-class Node<T> {
-  T data;
-  Node<T> next;
-
-  /**
-   * Constructs a new Node with the given data.
-   *
-   * @param data The data to be stored in this Node.
-   */
-  public Node(T data) {
-    this.data = data;
-    this.next = null;
-  }
-}
-
-/**
  * A class that represents a singly-linked list.
  *
  * @param <T> The type of the data that this list holds.
