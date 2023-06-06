@@ -23,13 +23,17 @@ public class ListLinked<T> {
    * @param elem The element to be added to the list.
    */
   public void addFirst(T elem) {
+    // Create a new node to hold the element.
     Node<T> node = new Node<T>(elem);
+    // If the list is empty, set the head and tail to the new node.
     if (isEmpty()) {
       head = tail = node;
+      // Otherwise, set the new node's next to the current head, and set the head to the new node.
     } else {
       node.next = head;
       head = node;
     }
+    // Increment the size of the list.
     size++;
   }
 
@@ -56,13 +60,16 @@ public class ListLinked<T> {
    * @param elem The element to be added to the list.
    */
   public void addLast(T elem) {
+    // Create a new node to hold the element.
     Node<T> node = new Node<T>(elem);
     if (isEmpty()) {
       head = tail = node;
+      // Otherwise, set the new node's next to the current head, and set the head to the new node.
     } else {
       tail.next = node;
       tail = node;
     }
+    // Increment the size of the list.
     size++;
   }
 
@@ -72,47 +79,21 @@ public class ListLinked<T> {
    * @return The first element in the list, or null if the list is empty.
    */
   public T removeFirst() {
+    // If the list is empty, return null.
     if (isEmpty()) {
       return null;
     }
-
+    // Get the data from the head node.
     T data = head.data;
+    // Move the head to the next node.
     head = head.next;
+    // Remove one from the size of the list
     size--;
 
     if (isEmpty()) {
       tail = null;
     }
-
-    return data;
-  }
-
-  /**
-   * Removes and returns the last element in the list.
-   *
-   * @return The last element in the list, or null if the list is empty.
-   */
-  public T removeLast() {
-    if (isEmpty()) {
-      return null;
-    }
-
-    T data;
-    if (head == tail) {
-      data = head.data;
-      head = tail = null;
-    } else {
-      Node<T> current = head;
-      while (current.next != tail) {
-        current = current.next;
-      }
-
-      data = tail.data;
-      tail = current;
-      tail.next = null;
-    }
-    size--;
-
+    // Return the data that was in the head node.
     return data;
   }
 

@@ -8,8 +8,13 @@ package nz.ac.auckland.se281.datastructures;
 public class QuickQueue<T> {
   private ListLinked<T> list = new ListLinked<T>();
 
-  // Adds an element to the end of the queue in O(1)
+  /**
+   * Enqueues an element to the end of the queue in O(1).
+   *
+   * @param elem The element to be added to the queue.
+   */
   public void enqueue(T elem) {
+    // If the element is not already in the queue, add it to the end.
     if (!list.contains(elem)) {
       list.addLast(elem);
     }

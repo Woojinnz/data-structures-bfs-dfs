@@ -23,6 +23,12 @@ public class Graph<T extends Comparable<T>> {
   private Set<Edge<T>> edges;
   private AdjacencyListGraph<T> adjacencyListGraph;
 
+  /**
+   * Constructs a new Graph with the given verticies and edges.
+   *
+   * @param verticies The set of verticies in the graph.
+   * @param edges The set of edges in the graph.
+   */
   public Graph(Set<T> verticies, Set<Edge<T>> edges) {
     this.verticies = verticies;
     this.edges = edges;
@@ -70,10 +76,10 @@ public class Graph<T extends Comparable<T>> {
       }
     }
 
-    List<T> orderedRoots = new ArrayList<>(roots);
+    List<T> orderedRoots = new ArrayList<T>(roots);
     sortList(orderedRoots);
 
-    Set<T> rootsOrdered = new LinkedHashSet<>(orderedRoots);
+    Set<T> rootsOrdered = new LinkedHashSet<T>(orderedRoots);
 
     // Return set which contains all the verticies that are considered a root
     return rootsOrdered;

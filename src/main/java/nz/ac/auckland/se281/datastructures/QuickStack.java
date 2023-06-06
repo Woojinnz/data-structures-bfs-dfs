@@ -8,8 +8,13 @@ package nz.ac.auckland.se281.datastructures;
 public class QuickStack<T> {
   private ListLinked<T> list = new ListLinked<T>();
 
-  // Pushes an element to the top of the stack in O(1)
+  /**
+   * Pushes an element to the top of the stack in O(1).
+   *
+   * @param elem The element to be added to the stack.
+   */
   public void push(T elem) {
+    // If the element is not already in the stack, add it to the top.
     if (!contains(elem)) {
       list.addFirst(elem);
     }

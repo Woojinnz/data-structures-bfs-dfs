@@ -6,8 +6,8 @@ package nz.ac.auckland.se281.datastructures;
  * @param <T> The type of the data that this node holds.
  */
 public class Node<T> {
-  T data;
-  Node<T> next;
+  protected T data;
+  protected Node<T> next;
 
   /**
    * Constructs a new Node with the given data.
